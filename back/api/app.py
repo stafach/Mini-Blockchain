@@ -16,8 +16,16 @@ ma_bc = Blockchain()
 ma_bc.difficulty = 3
 ma_bc.length = 0
 
-# Create the genesis block
-facade.initialize(ctypes.byref(ma_bc))
+# json file with the blockchain
+DB_FILE = "blockchain.json"
+
+# Verify if the file exist
+if os.path.exists(DB_FILE):
+    print(f"The file ({DB_FILE}) exist")
+    facade.load_blockchain(ma_bc, DB_FILE)
+else:
+    print("File doesn't exist")
+    facade.initialize(ctypes.byref(ma_bc))
 
 facade.active_blockchain = ma_bc
 
