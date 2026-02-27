@@ -22,5 +22,4 @@ typedef struct Block
 void calculate_sha256(const char *input, char *output);
 void calculate_block_hash(Block *block);
 Block *create_genesis_block(void);
-
 #endif

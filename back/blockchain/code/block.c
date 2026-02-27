@@ -139,7 +139,7 @@ int add_block(Blockchain *bc, const char *data)
 *
 * bc: the blokchain
 */
-int is_chain_valid(const Blockchain *bc)
+int is_chain_valid(const Blockchain *bc, int *error_index)
 {
     if (!bc)
         return -1;
@@ -147,11 +147,26 @@ int is_chain_valid(const Blockchain *bc)
 
     for (i = 0; i < bc->length; i++)
     {
+        Block *current = bc->blocks[i];
+
+        char original_hash[HASH_SIZE];
+        strncpy(original_hash, current->hash, HASH_SIZE);
+        
+        calculate_block_hash(current);
+        
+        if (strcmp(current->hash, original_hash) != 0)
+        {
+            fprintf(stderr, "Invalid data at block %d: Hash doesn't match content!\n", i);
+            *error_index = i;
+            return -1;
+        }
+
         if (i == 0)
         {
             if (strcmp(bc->blocks[i]->previous_hash, "0") != 0)
             {
                 fprintf(stderr, "Error previous hash genesis block");
+                *error_index = i;
                 return -1;
             }
         }
@@ -159,7 +174,8 @@ int is_chain_valid(const Blockchain *bc)
         {
             if (strcmp(bc->blocks[i]->previous_hash, bc->blocks[i-1]->hash) != 0)
             {
-                fprintf(stderr, "Error previous hash");
+                fprintf(stderr, "Error previous hash at block %d", i);
+                *error_index = i;
                 return -1;
             }
         }
@@ -193,4 +209,44 @@ void free_blockchain(Blockchain *bc)
         free(bc->blocks[i]);
 
     bc->length = 0;
+}
+
+/**
+ * Adds a block from existing data (used for loading from disk)
+ * without re-mining it.
+ */
+int recreate_blockchain(Blockchain *bc, int index, long timestamp, const char *data, 
+                  const char *hash, const char *prev_hash, int nonce)
+{
+    if (!bc || bc->length >= MAX_BLOCKS)
+        return -1;
+
+    Block *new_block = malloc(sizeof(Block));
+    if (!new_block)
+        return -1;
+
+    new_block->index = index;
+    new_block->timestamp = timestamp;
+    
+    strncpy(new_block->data, data, DATA_SIZE - 1);
+    new_block->data[DATA_SIZE - 1] = '\0';
+    
+    strncpy(new_block->hash, hash, HASH_SIZE - 1);
+    new_block->hash[HASH_SIZE - 1] = '\0';
+    
+    strncpy(new_block->previous_hash, prev_hash, HASH_SIZE - 1);
+    new_block->previous_hash[HASH_SIZE - 1] = '\0';
+
+    new_block->nonce = nonce;
+    
+
+    if (index != 0)
+        new_block->prev = bc->blocks[bc->length - 1];
+    else
+        new_block->prev = NULL;
+
+    bc->blocks[bc->length] = new_block;
+    bc->length++;
+
+    return 0;
 }
