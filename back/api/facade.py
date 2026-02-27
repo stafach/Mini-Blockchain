@@ -27,7 +27,7 @@ add.restype = ctypes.c_int
 
 # Is chain valid
 chain_valid = blockchain.is_chain_valid
-chain_valid.argtypes = [ctypes.POINTER(Blockchain)]
+chain_valid.argtypes = [ctypes.POINTER(Blockchain), ctypes.POINTER(ctypes.c_int)]
 chain_valid.restype = ctypes.c_int
 
 # Get last block
