@@ -44,9 +44,11 @@ class BlockList(Resource):
 @api.route('/add')
 class AddBlock(Resource):
     @api.expect(add_block_model)
-    @api.response(201, 'Block added successfully')
-    @api.response(400, 'Invalid data or mining failed')
+    @api.response(400, 'Missing data field')
+    @api.response(400, 'Failed to add block')
     @api.response(500, 'Internal error')
+    @api.response(400, 'Failed to save block')
+    @api.response(201, 'Block added')
     def post(self):
         """Add a block and mine it"""
         data_json = request.json
@@ -60,6 +62,14 @@ class AddBlock(Resource):
             
             if result != 0:
                 return {"error": "Failed to add block"}, 400
+        except Exception as e:
+            return {"error": f"Internal error: {str(e)}"}, 500
+        
+        try:
+            save = facade.save_blockchain(facade.active_blockchain)
+
+            if save != 0:
+                return {"error": "Failed to save the block"}, 400
         except Exception as e:
             return {"error": f"Internal error: {str(e)}"}, 500
         
