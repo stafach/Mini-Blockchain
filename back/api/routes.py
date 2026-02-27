@@ -90,7 +90,9 @@ class ValidateChain(Resource):
     def get(self):
         """Verifies the integrity of the blockchain"""
         # Call the function
-        result = facade.chain_valid(ctypes.byref(facade.active_blockchain))
+        error_idx = ctypes.c_int(0)
+
+        result = facade.chain_valid(ctypes.byref(facade.active_blockchain), ctypes.byref(error_idx))
         
         if result == 0:
             return {
@@ -99,8 +101,9 @@ class ValidateChain(Resource):
                 "length": facade.active_blockchain.length
             }, 200
         else:
+            idx = error_idx.value
             return {
                 "status": "Error",
-                "message": "Blockchain corruption detected!"
+                "message": f"Corruption detected at block index {idx} "
             }, 400
         
