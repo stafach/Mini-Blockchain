@@ -139,7 +139,7 @@ int add_block(Blockchain *bc, const char *data)
 *
 * bc: the blokchain
 */
-int is_chain_valid(const Blockchain *bc)
+int is_chain_valid(const Blockchain *bc, int *error_index)
 {
     if (!bc)
         return -1;
@@ -157,6 +157,7 @@ int is_chain_valid(const Blockchain *bc)
         if (strcmp(current->hash, original_hash) != 0)
         {
             fprintf(stderr, "Invalid data at block %d: Hash doesn't match content!\n", i);
+            *error_index = i;
             return -1;
         }
 
@@ -165,6 +166,7 @@ int is_chain_valid(const Blockchain *bc)
             if (strcmp(bc->blocks[i]->previous_hash, "0") != 0)
             {
                 fprintf(stderr, "Error previous hash genesis block");
+                *error_index = i;
                 return -1;
             }
         }
@@ -173,6 +175,7 @@ int is_chain_valid(const Blockchain *bc)
             if (strcmp(bc->blocks[i]->previous_hash, bc->blocks[i-1]->hash) != 0)
             {
                 fprintf(stderr, "Error previous hash at block %d", i);
+                *error_index = i;
                 return -1;
             }
         }
