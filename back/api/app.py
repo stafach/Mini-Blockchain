@@ -9,7 +9,7 @@ from routes import api as blocks_ns
 
 app = Flask(__name__)
 # configure the API with Swagger
-api = Api(app, title='Blockchain API', version='1.0', description='Blockchain moteur C')
+api = Api(app, title='Blockchain API', version='1.0', description='Blockchain engine')
 
 # Blockchain initialization
 ma_bc = Blockchain()
