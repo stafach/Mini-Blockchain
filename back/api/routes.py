@@ -78,8 +78,8 @@ class ValidateChain(Resource):
     @api.response(200, 'Blockchain is valid and untampered.')
     @api.response(400, 'Blockchain corruption detected!')
     def get(self):
-        """Vérifie l'intégrité de la blockchain via le moteur C"""
-        # On appelle la fonction C
+        """Verifies the integrity of the blockchain"""
+        # Call the function
         result = facade.chain_valid(ctypes.byref(facade.active_blockchain))
         
         if result == 0:
