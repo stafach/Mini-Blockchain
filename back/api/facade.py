@@ -107,8 +107,7 @@ def load_blockchain(bc, filename="blockchain.json"):
         return False
     
     #clear the new blockchain
-    for i in range(bc.length):
-        free(bc.blocks[i])
+    free(bc)
     bc.length = 0
 
     for b in data:
