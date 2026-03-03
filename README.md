@@ -75,31 +75,30 @@ This project was developed in 3 weekly sprints:
 ### 2. Python Dependencies
 
 Create a virtual environment and install dependencies:
+```bash
+python3 -m venv venv # macOS/Linux
+source venv/bin/activate # Windows
 
-python3 -m venv venv
-# macOS/Linux
-source venv/bin/activate
-# Windows
 venv\Scripts\activate
 
 pip install -r requirements.txt
-
+```
 ### 3. Compile the C Engine
 
 Compile the blockchain shared library:
-
+```bash
 gcc -fPIC -shared -o back/blockchain/code/blockchain.so \
     back/blockchain/code/block.c \
     back/blockchain/code/sha256.c \
     -I$(brew --prefix openssl)/include \
     -L$(brew --prefix openssl)/lib \
     -lcrypto
-
+```
 ### 4. Usage
 
 Start the Flask API server:
 
-python3 back/api/app.py
+`python3 back/api/app.py`
 
 Open the web interface:
 
@@ -150,7 +149,7 @@ Although this project uses a JSON file for persistence, the data follows a stric
 ### Block Structure (Data Model)
 The diagram below illustrates the attributes of each block and how they are linked to form the blockchain:
 
-![Blockchain Data Model](./images/Persistence.jpg)
+![Blockchain Data Model](./images/Persistence.png)
 
 **Key Components of the Schema:**
 * **Genesis Block:** The starting point of the chain with `index = 0` and a `previous_hash` set to "0".
