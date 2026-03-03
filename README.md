@@ -37,7 +37,7 @@ This project implements a **mini blockchain engine** written in **C**, exposed t
 
 ## Project Structure
 
-
+```text
 back/
 ├─ blockchain/
 │ ├─ code/ # C source files and compiled .so library
@@ -51,7 +51,7 @@ front/
 ├─ mine.html # Mining page
 └─ css/style.css # Styles
 requirements.txt # Python dependencies
-
+```
 
 ---
 
