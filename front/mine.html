@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Miner un bloc</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="mining-card">
+            <div class="card-header">
+                <h3>Mine a new Block</h3>
+            </div>
+            
+            <div class="card-body">
+                <div class="input-group">
+                    <label>Data</label>
+                    <textarea id="blockData" rows="4" placeholder="Enter your data here" oninput="updateCount()"></textarea>
+                    <div id="charCount" class="counter">0 / 255</div>
+                </div>
+
+                <div id="mineBtn" class="btn-success" style="text-align: center; display: block; cursor: pointer;" onclick="mineBlock(event)">
+                    Start mining
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-link">
+            <a href="index.html">Back to the blockchain</a>
+        </div>
+    </div>
+
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modalTitle"></h3>
+            <p id="modalMessage"></p>
+            <div id="modalBtn" class="btn-success" style="cursor: pointer; margin-top: 20px;">OK</div>
+        </div>
+    </div>
+
+    <script>
+        // Function to display the modal and manage redirection
+        function showModal(title, message, isSuccess) {
+            const modal = document.getElementById('customModal');
+            const modalBtn = document.getElementById('modalBtn');
+
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+
+            // Color: Green for success, Red for error
+            modalBtn.style.backgroundColor = isSuccess ? "var(--accent)" : "var(--danger)";
+            
+            // The modal is displayed
+            modal.classList.add("active");
+
+            // Define what happens when we click OK
+            modalBtn.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (isSuccess) {
+                    // If success redirection to the homepage
+                    window.location.replace("index.html");
+                } else {
+                    // If error we return to the mining page
+                    modal.classList.remove("active");
+                    const mineBtn = document.getElementById('mineBtn');
+                }
+            };
+        }
+
+        async function mineBlock(event) {
+            // immediately blocks all browser actions
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            const dataInput = document.getElementById('blockData').value;
+            const btn = document.getElementById('mineBtn');
+
+            // Check empty data
+            if (dataInput.trim() === "") {
+                showModal("Error", "Data cannot be empty!", false);
+                return false;
+            }
+
+            try {
+                const response = await fetch('http://127.0.0.1:5001/blocks/add', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({data: dataInput})
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showModal("Success!", "Block #" + result.index + " has been added.", true);
+                } else {
+                    showModal("Mining Error", result.message || "Data size not respected ", false);
+                }
+            } catch (error) {
+                showModal("Connection Error", "API is not reachable.", false);
+            }
+            return false;
+        }
+
+        function updateCount() {
+            const textarea = document.getElementById('blockData');
+            const counter = document.getElementById('charCount');
+            const length = textarea.value.length;
+            
+            counter.innerText = `${length} / 255`;
+            counter.style.color = length > 255 ? "var(--danger)" : "var(--text-muted)";
+        }
+    </script>
+</body>
+</html>

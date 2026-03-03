@@ -97,7 +97,7 @@ class ValidateChain(Resource):
         if result == 0:
             return {
                 "status": "Success",
-                "message": "Blockchain is valid and untampered.",
+                "message": "Blockchain is valid.",
                 "length": facade.active_blockchain.length
             }, 200
         else:
