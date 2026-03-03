@@ -6,8 +6,10 @@ from flask_restx import Api
 import facade
 from models import Blockchain
 from routes import api as blocks_ns
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 # configure the API with Swagger
 api = Api(app, title='Blockchain API', version='1.0', description='Blockchain engine')
 
