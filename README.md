@@ -51,10 +51,18 @@ front/
 ├─ mine.html # Mining page
 └─ css/style.css # Styles
 requirements.txt # Python dependencies
-Makefile # C compilation
 
 
 ---
+
+## Development Lifecycle
+This project was developed in 3 weekly sprints:
+* **Sprint 1:** Core C Engine & SHA256 implementation.
+* **Sprint 2:** Python Bridge (ctypes) & REST API development.
+* **Sprint 3:** Web Interface & Integration testing.
+
+---
+
 
 ## Installation
 
@@ -99,6 +107,10 @@ http://localhost:5001/
 
 Mine and add blocks via the web interface or API.
 
+
+---
+
+
 ## Tests
 
 This project includes both unit tests and integration tests to ensure the blockchain engine works correctly.
@@ -127,6 +139,9 @@ pytest test.py
 
 All tests interact with the Flask API and the persistent blockchain JSON file to ensure both the C engine and Python API behave as expected. If you want to run the tests a second time, you must delete the blockchain.json file that was created after the first test.
 ```
+
+---
+
 
 ## Data Schema & Persistence
 
