@@ -63,26 +63,35 @@
         }
 
         async function loadBlockchain() {
-            try {
-                const response = await fetch('http://127.0.0.1:5001/blocks/');
-                const blocks = await response.json();
-                const container = document.getElementById('blockchain-container');
-                
-                container.innerHTML = blocks.map(block => `
-                    <div class="card" style="margin-bottom: 20px;">
-                        <div class="card-header"> Bloc #${block.index}</div>
-                        <div class="card-body">
-                            <p><strong>Hash:</strong> <small class="text-break">${block.hash}</small></p>
-                            <p><strong>Previous Hash:</strong> <small class="text-break">${block.previous_hash}</small></p>
-                            <p><strong>Data:</strong> ${escapeHtml(block.data)}</p>
-                            <p><strong>Nonce:</strong> <span class="nonce">${block.nonce}</span></p>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error("Erreur de chargement:", error);
-            }
-        }
+                    try {
+                        const response = await fetch('http://127.0.0.1:5001/blocks/');
+                        const blocks = await response.json();
+                        const container = document.getElementById('blockchain-container');
+                        
+                        container.innerHTML = blocks.map(block => {
+                            const date = block.timestamp 
+                                ? new Date(block.timestamp * 1000).toLocaleString('fr-FR') 
+                                : "Date inconnue";
+
+                            return `
+                                <div class="card" style="margin-bottom: 20px;">
+                                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span>Bloc #${block.index}</span>
+                                        <small style="color: var(--text-muted); font-weight: normal;">${date}</small>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>Hash:</strong> <small class="text-break">${block.hash}</small></p>
+                                        <p><strong>Previous Hash:</strong> <small class="text-break">${block.previous_hash}</small></p>
+                                        <p><strong>Data:</strong> ${escapeHtml(block.data)}</p>
+                                        <p><strong>Nonce:</strong> <span class="nonce">${block.nonce}</span></p>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    } catch (error) {
+                        console.error("Erreur de chargement:", error);
+                    }
+                }
 
         async function checkIntegrity(event) {
             if (event) event.preventDefault();
