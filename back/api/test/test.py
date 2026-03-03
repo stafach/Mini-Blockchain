@@ -51,6 +51,8 @@ def test_blockchain_validation(client):
     assert response.status_code == 200
     assert data['status'] == "Success"
 
+
+
 def test_tamper_detection(client):
     """
     Test if /validate detects that the blockchain is corrupted
@@ -74,3 +76,26 @@ def test_tamper_detection(client):
     
     assert response.status_code == 400
     assert "Corruption detected" in response.get_json()['message']
+
+
+def test_recreate_overflow(client):
+    """Check that recreate_blockchain handles excessively long data"""
+    db_file = "blockchain.json"
+    
+    # Verify that the blockchain is initialized
+    client.get('/blocks/') 
+
+    # Modify last block with data > DATA_SIZE
+    with open(db_file, 'r') as f:
+        content = json.load(f)
+    content[-1]['data'] = "B" * 5000 
+    
+    with open(db_file, 'w') as f:
+        json.dump(content, f)
+    
+    # load_blockchain calls recreate_blockchain
+    result = load_blockchain(active_blockchain, db_file)
+    
+    # Verify that the engine has refused rebuilding
+    assert result is False
+    
