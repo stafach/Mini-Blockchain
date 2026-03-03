@@ -61,10 +61,26 @@ This project was developed in 3 weekly sprints:
 * **Sprint 2:** Python Bridge (ctypes) & REST API development.
 * **Sprint 3:** Web Interface & Integration testing.
 
+
 ---
 
 
-## Installation
+## Docker
+The easiest way to run the project is using Docker, which automatically handles the C compilation and environment setup.
+
+```Bash
+
+docker build -t mini-blockchain . # Build the image
+
+docker run -p 5001:5001 mini-blockchain # Run the container
+```
+The application will be available at http://localhost:5001
+
+
+---
+
+
+## Manual Installation
 
 ### 1. Prerequisites
 - **OpenSSL** is required for SHA256 hashing
