@@ -101,7 +101,7 @@ void init_blockchain(Blockchain *bc)
 */
 int add_block(Blockchain *bc, const char *data)
 {
-    if (!bc || !data || bc->length >= MAX_BLOCKS)
+    if (!bc || !data || bc->length >= MAX_BLOCKS || strlen(data) > DATA_SIZE)
         return -1;
 
     if (bc->length <= 0)
