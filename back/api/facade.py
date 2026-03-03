@@ -3,7 +3,11 @@ from models import Block, Blockchain
 import json
 import os
 
-blockchain = ctypes.CDLL('/Users/chermatmustapha/Mini-Blockchain/back/blockchain/code/blockchain.so')
+# retrieves the folder where the facade.py file is located
+base_dir = os.path.dirname(os.path.abspath(__file__))
+#built the path to the .so relative to the project
+lib_path = os.path.join(base_dir, "../blockchain/code/blockchain.so")
+blockchain = ctypes.CDLL(lib_path)
 
 # Genesis
 create_genesis = blockchain.create_genesis_block
