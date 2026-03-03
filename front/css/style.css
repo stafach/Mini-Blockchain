@@ -1,0 +1,276 @@
+/* --- 1. VARIABLES --- */
+:root {
+    --bg-light: #f8f9fa;
+    --white: #ffffff;
+    --primary: #2c3e50;
+    --accent: #27ae60;
+    --danger: #e74c3c;
+    --border: #dee2e6;
+    --text: #333;
+    --text-muted: #6c757d;
+}
+
+/* --- 2. BASES & UTILS --- */
+body {
+    background-color: var(--bg-light);
+    color: var(--text);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* --- 3. NAVIGATION --- */
+.navbar {
+    background-color: var(--white);
+    padding: 30px 0;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+}
+
+.navbar-brand {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--primary);
+    text-decoration: none;
+    display: block;
+    margin-bottom: 25px;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.btn-index, .btn-mine {
+    padding: 12px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.btn-index {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+}
+
+.btn-mine {
+    background: var(--primary);
+    color: white;
+}
+
+/* --- 4. CARTES BLOCS (INDEX) --- */
+.validate {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.validate h2 {
+    font-size: 2.2rem;
+    margin-bottom: 20px;
+    color: var(--primary);
+}
+
+#blockchain-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+}
+
+.card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    width: 100%;
+    max-width: 750px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.card-header {
+    background: #f1f3f5;
+    padding: 18px 25px;
+    font-weight: bold;
+    color: var(--primary);
+    border-bottom: 1px solid var(--border);
+}
+
+.card-body {
+    padding: 25px;
+}
+
+.text-break {
+    word-break: break-all;
+    font-family: 'Monaco', monospace;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    display: block;
+    color: #444;
+}
+
+.nonce {
+    background: var(--accent);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+/* --- 5. PAGE MINAGE (MINE.HTML) --- */
+.mining-card {
+    background: var(--white);
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.input-group {
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-weight: bold;
+    margin-bottom: 12px;
+    text-align: left; /* Aligné à gauche pour le formulaire */
+}
+
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background: #fdfdfd;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 15px;
+    font-size: 1rem;
+    resize: vertical;
+    min-height: 120px;
+}
+
+.counter {
+    text-align: right;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+
+.btn-success {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: 10px;
+    width: 100%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s ease;
+    display: block;
+    box-sizing: border-box;
+}
+
+.btn-success:hover {
+    opacity: 0.9;
+}
+
+.btn-warning {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 14px 35px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.footer-link {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.footer-link a {
+    color: var(--primary);
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 2px solid var(--primary);
+}
+
+/* --- 6. MODAL --- */
+.modal-overlay {
+    display: none; /* caché par défaut */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Légèrement plus sombre pour le focus */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-overlay.active {
+    display: flex; /* affiché uniquement quand actif */
+}
+
+.modal-content {
+    background: var(--white);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center; /* CENTRE TOUT LE TEXTE */
+    max-width: 400px;
+    width: 85%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    animation: fadeInScale 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* CENTRE LES ELEMENTS FLEX */
+    gap: 15px;
+}
+
+.modal-content h3 {
+    margin: 0;
+    color: var(--primary);
+    font-size: 2rem;
+    width: 100%;
+}
+
+.modal-content p {
+    margin: 10px 0 20px 0;
+    font-size: 1.1rem;
+    color: var(--text);
+    line-height: 1.5;
+    width: 100%;
+}
+
+/* Ajustement du bouton dans la modal */
+.modal-content .btn-success {
+    margin-top: 10px;
+    width: 100%;
+    max-width: 200px; /* Le bouton ne prend pas toute la largeur pour être plus élégant */
+}
+
+/* --- Animation douce --- */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
