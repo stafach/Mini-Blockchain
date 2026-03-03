@@ -1,17 +1,35 @@
 import ctypes
 import atexit
 import os
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_restx import Api
 import facade
 from models import Blockchain
 from routes import api as blocks_ns
 from flask_cors import CORS
 
+
+# Create path to front directory
+FRONTEND_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../front"))
+
+
 app = Flask(__name__)
 CORS(app)
+
+# Routes for frontend
+@app.route('/')
+def serve_index():
+    """Serves the blockchain's main page"""
+    return send_from_directory(FRONTEND_FOLDER, 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    """Serves CSS, JS files and other pages (mine.html)"""
+    return send_from_directory(FRONTEND_FOLDER, path)
+
+
 # configure the API with Swagger
-api = Api(app, title='Blockchain API', version='1.0', description='Blockchain engine')
+api = Api(app, title='Blockchain API', version='1.0', description='Blockchain engine', doc='/swagger')
 
 # Blockchain initialization
 ma_bc = Blockchain()
