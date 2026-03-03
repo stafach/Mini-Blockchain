@@ -143,18 +143,20 @@ int is_chain_valid(const Blockchain *bc, int *error_index)
 {
     if (!bc)
         return -1;
-    int i;
+    int i = 0;
 
-    for (i = 0; i < bc->length; i++)
+    while (i < bc->length)
     {
         Block *current = bc->blocks[i];
 
         char original_hash[HASH_SIZE];
         strncpy(original_hash, current->hash, HASH_SIZE);
         
-        calculate_block_hash(current);
+        // Use a tmp block for not modify current block
+        Block tmp_block = *current;
+        calculate_block_hash(&tmp_block);
         
-        if (strcmp(current->hash, original_hash) != 0)
+        if (strcmp(tmp_block.hash, original_hash) != 0)
         {
             fprintf(stderr, "Invalid data at block %d: Hash doesn't match content!\n", i);
             *error_index = i;
@@ -179,6 +181,7 @@ int is_chain_valid(const Blockchain *bc, int *error_index)
                 return -1;
             }
         }
+        i++;
     }
     return 0;
 }
