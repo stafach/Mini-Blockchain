@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini-Blockchain</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light">
+    <nav class="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="#">Mini-Blockchain</a>
+            <div class="nav-buttons">
+                <a href="mine.html" class="btn-mine">Mine a block</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="validate">
+            <h2>Complete Blockchain</h2>
+        </div>
+        
+        <div id="blockchain-container">
+            </div>
+    </div>
+
+    <div class="container">
+        <div class="validate">
+            <button onclick="checkIntegrity()" class="btn-warning">Check integrity</button>
+        </div>
+        
+        <div id="blockchain-container" class="container">
+            </div>
+    </div>
+
+    <script>
+        async function loadBlockchain() {
+            const response = await fetch('http://127.0.0.1:5001/blocks/');
+            const blocks = await response.json();
+            const container = document.getElementById('blockchain-container');
+            
+            container.innerHTML = blocks.map(block => `
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header"> Bloc #${block.index}</div>
+                        <div class="card-body">
+                            <p><strong>Hash:</strong> <small class="text-break">${block.hash}</small></p>
+                            <p><strong>Previous Hash:</strong> <small class="text-break">${block.previous_hash}</small></p>
+                            <p><strong>Data:</strong> ${block.data}</p>
+                            <p><strong>Nonce:</strong> <span class="nonce">${block.nonce}</span></p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function checkIntegrity() {
+            const response = await fetch('http://127.0.0.1:5001/blocks/validate');
+            const data = await response.json();
+            alert(data.status === "Success" ? data.message : data.message);
+        }
+
+        loadBlockchain();
+    </script>
+</body>
+</html>
