@@ -107,20 +107,23 @@ def load_blockchain(bc, filename="blockchain.json"):
         return False
     
     #clear the new blockchain
-    for i in range(bc.length):
-        free(bc.blocks[i])
+    free(bc)
     bc.length = 0
 
     for b in data:
-            recreate_bc(
-                ctypes.byref(bc),
-                b['index'],
-                b['timestamp'],
-                b['data'].encode('utf-8'),
-                b['hash'].encode('utf-8'),
-                b['previous_hash'].encode('utf-8'),
-                b['nonce']
+        res = recreate_bc(
+            ctypes.byref(bc),
+            b['index'],
+            b['timestamp'],
+            b['data'].encode('utf-8'),
+            b['hash'].encode('utf-8'),
+            b['previous_hash'].encode('utf-8'),
+            b['nonce']
             )
+        
+        if res == -1:
+            print(f"Error: recreation failed for block {b['index']}")
+            return False
 
     print(f"Successfully restored {len(data)} blocks from {filename}")
     return True

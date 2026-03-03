@@ -101,7 +101,7 @@ void init_blockchain(Blockchain *bc)
 */
 int add_block(Blockchain *bc, const char *data)
 {
-    if (!bc || !data || bc->length >= MAX_BLOCKS)
+    if (!bc || !data || bc->length >= MAX_BLOCKS || strlen(data) >= DATA_SIZE)
         return -1;
 
     if (bc->length <= 0)
@@ -218,7 +218,7 @@ void free_blockchain(Blockchain *bc)
 int recreate_blockchain(Blockchain *bc, int index, long timestamp, const char *data, 
                   const char *hash, const char *prev_hash, int nonce)
 {
-    if (!bc || bc->length >= MAX_BLOCKS)
+    if (!bc || bc->length >= MAX_BLOCKS || strlen(data) >= DATA_SIZE)
         return -1;
 
     Block *new_block = malloc(sizeof(Block));
