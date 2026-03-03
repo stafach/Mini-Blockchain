@@ -8,7 +8,7 @@
 <body class="bg-light">
     <nav class="navbar">
         <div class="container">
-            <a class="navbar-brand" href="#">Mini-Blockchain</a>
+            <a class="navbar-brand" href="index.html">Mini-Blockchain</a>
             <div class="nav-buttons">
                 <a href="mine.html" class="btn-mine">Mine a block</a>
             </div>
@@ -20,45 +20,87 @@
             <h2>Complete Blockchain</h2>
         </div>
         
-        <div id="blockchain-container">
-            </div>
+        <div id="blockchain-container"></div>
     </div>
 
     <div class="container">
         <div class="validate">
-            <button onclick="checkIntegrity()" class="btn-warning">Check integrity</button>
+            <button onclick="checkIntegrity(event)" class="btn-warning">Check integrity</button>
         </div>
-        
-        <div id="blockchain-container" class="container">
-            </div>
+    </div>
+
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modalTitle"></h3>
+            <p id="modalMessage"></p>
+            <div id="modalBtn" class="btn-success" style="cursor: pointer; margin-top: 20px; max-width: 200px;">OK</div>
+        </div>
     </div>
 
     <script>
-        async function loadBlockchain() {
-            const response = await fetch('http://127.0.0.1:5001/blocks/');
-            const blocks = await response.json();
-            const container = document.getElementById('blockchain-container');
+        // Prevents the injection of HTML scripts into the data
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Function to display the stylized modal
+        function showModal(title, message, isSuccess) {
+            const modal = document.getElementById('customModal');
+            const modalBtn = document.getElementById('modalBtn');
             
-            container.innerHTML = blocks.map(block => `
-                <div class="col-md-4">
-                    <div class="card">
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            
+            modalBtn.style.backgroundColor = isSuccess ? "var(--accent)" : "var(--danger)";
+            
+            modal.classList.add("active");
+            
+            modalBtn.onclick = function() {
+                modal.classList.remove("active");
+            };
+        }
+
+        async function loadBlockchain() {
+            try {
+                const response = await fetch('http://127.0.0.1:5001/blocks/');
+                const blocks = await response.json();
+                const container = document.getElementById('blockchain-container');
+                
+                container.innerHTML = blocks.map(block => `
+                    <div class="card" style="margin-bottom: 20px;">
                         <div class="card-header"> Bloc #${block.index}</div>
                         <div class="card-body">
                             <p><strong>Hash:</strong> <small class="text-break">${block.hash}</small></p>
                             <p><strong>Previous Hash:</strong> <small class="text-break">${block.previous_hash}</small></p>
-                            <p><strong>Data:</strong> ${block.data}</p>
+                            <p><strong>Data:</strong> ${escapeHtml(block.data)}</p>
                             <p><strong>Nonce:</strong> <span class="nonce">${block.nonce}</span></p>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            } catch (error) {
+                console.error("Erreur de chargement:", error);
+            }
         }
 
-        async function checkIntegrity() {
-            const response = await fetch('http://127.0.0.1:5001/blocks/validate');
-            const data = await response.json();
-            alert(data.status === "Success" ? data.message : data.message);
+        async function checkIntegrity(event) {
+            if (event) event.preventDefault();
+            
+            try {
+                const response = await fetch('http://127.0.0.1:5001/blocks/validate');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showModal("Success!", data.message, true);
+                } else {
+                    showModal("Corruption Detected!", data.message, false);
+                }
+            } catch (error) {
+                showModal("Error", "API is not reachable.", false);
+            }
         }
+
 
         loadBlockchain();
     </script>
