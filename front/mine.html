@@ -85,6 +85,12 @@
                 return false;
             }
 
+            // Check data size
+            if (dataInput.length > 255) {
+                showModal("Error", "Data cannot exceed 255 characters!", false);
+                return false;
+            }
+
             try {
                 const response = await fetch('http://127.0.0.1:5001/blocks/add', {
                     method: 'POST',
@@ -97,7 +103,7 @@
                 if (response.ok) {
                     showModal("Success!", "Block #" + result.index + " has been added.", true);
                 } else {
-                    showModal("Mining Error", result.message || "Data size not respected ", false);
+                    showModal("Mining Error", "Blockchain corrupt", false);
                 }
             } catch (error) {
                 showModal("Connection Error", "API is not reachable.", false);
