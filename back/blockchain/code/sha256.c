@@ -40,6 +40,9 @@ void calculate_block_hash(Block *block) {
     char tx_str[512];
     char hash[HASH_SIZE];
 
+    // initialize the buffer
+    str_to_hash[0] = '\0';
+
     // Concatenation of the block fields
     snprintf(str_to_hash, sizeof(str_to_hash), "%d%ld%d%s%d",
              block->index,
@@ -49,9 +52,9 @@ void calculate_block_hash(Block *block) {
              block->nonce);
     
     // Concatenation of the transaction
-    for (i = 0; i < block->tx_count; i++)
+    for (int i = 0; i < block->tx_count; i++)
     {
-        snprintf(tx_str, sizeof(tx), "%s%s%.2f",
+        snprintf(tx_str, sizeof(tx_str), "%s%s%.2f",
                  block->tx[i].sender,
                  block->tx[i].receiver,
                  block->tx[i].amount);
@@ -61,5 +64,6 @@ void calculate_block_hash(Block *block) {
     calculate_sha256(str_to_hash, hash);
 
     // Copuy result in the block
-    strncpy(block->hash, hash, HASH_SIZE);
+    strncpy(block->hash, hash, HASH_SIZE - 1);
+    block->hash[HASH_SIZE - 1] = '\0';
 }

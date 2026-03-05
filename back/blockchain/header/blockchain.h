@@ -14,7 +14,7 @@ typedef struct Blockchain
 
 
 void init_blockchain(Blockchain *bc);
-int add_block(Blockchain *bc, const char *data);
+int add_block(Blockchain *bc, Transaction *txs, int tx_count);
 int is_chain_valid(const Blockchain *bc, int *error_index);
 void mine_block(Block *block, int difficulty);
 Block *get_last_block(Blockchain *bc);

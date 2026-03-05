@@ -18,12 +18,15 @@ Block *create_genesis_block(void)
     // Fill in fields
     block->index = 0;
     block->timestamp = time(NULL);
-    strncpy(block->data, "Genesis Block", DATA_SIZE - 1);
-    block->data[DATA_SIZE - 1] = '\0';  // ensure null-termination
+    block->tx_count = 1;
+    strncpy(block->tx[0].sender, "System", 49);
+    block->tx[0].sender[49] = '\0';
+    strncpy(block->tx[0].receiver, "Master", 49);
+    block->tx[0].receiver[49] = '\0';
+    block->tx[0].amount = 0.0;
     strncpy(block->previous_hash, "0", HASH_SIZE - 1);
     block->previous_hash[HASH_SIZE - 1] = '\0';
     block->nonce = 0;
-    block->prev = NULL;
 
     // Calculate hash for the genesis block
     calculate_block_hash(block);
@@ -93,45 +96,64 @@ void init_blockchain(Blockchain *bc)
     bc->length = 1;
 }
 
-/**
-* Add a block to the blockchain
-*
-* bc: the blockchain
-* data: the data of the block
+/** 
+* Add a block to the blockchain 
+* 
+* bc: the blockchain 
+* txs: the transactions of the block 
+* tx_count: number of transaction to add 
 */
-int add_block(Blockchain *bc, const char *data)
+int add_block(Blockchain *bc, Transaction *txs, int tx_count)
 {
     int idx = 0;
 
-    if (!bc || !data || bc->length >= MAX_BLOCKS || strlen(data) >= DATA_SIZE || is_chain_valid(bc, &idx) != 0)
+    // Check everything is ok before add the block
+    if (!bc || !txs || tx_count <= 0 || tx_count > 5 ||
+        bc->length >= MAX_BLOCKS ||
+        is_chain_valid(bc, &idx) != 0)
         return -1;
 
-    if (bc->length <= 0)
-    {
-        fprintf(stderr, "Cannot add block: blockchain is empty. Initialize genesis block first.\n");
-        return -1;
-    }
+    // Create a new block
     Block *new_block = malloc(sizeof(Block));
     if (!new_block)
         return -1;
 
+    // add information to the block
     new_block->index = bc->length;
     new_block->timestamp = time(NULL);
-    strncpy(new_block->data, data, DATA_SIZE - 1); // Copy the data in the block
-    new_block->data[DATA_SIZE - 1] = '\0'; // Ensure last char is \0
-    
-    Block *prev = get_last_block(bc); //Get the last block of the blockchain
-    strncpy(new_block->previous_hash, prev->hash, HASH_SIZE - 1); // Copy the hash of last block in the new block
-    new_block->previous_hash[HASH_SIZE - 1] = '\0'; // Ensure last char is \0
+    new_block->tx_count = tx_count;
 
-    new_block->prev = prev; // Chain the new block to the previous one
+    // Copy the transactions
+    for (int i = 0; i < tx_count; i++)
+    {
+        strncpy(new_block->tx[i].sender, txs[i].sender, 49);
+        new_block->tx[i].sender[49] = '\0';
 
+        strncpy(new_block->tx[i].receiver, txs[i].receiver, 49);
+        new_block->tx[i].receiver[49] = '\0';
 
+        new_block->tx[i].amount = txs[i].amount;
+    }
+
+    // Get the last block of the blockchain
+    Block *prev = get_last_block(bc);
+    if (prev) {
+        strncpy(new_block->previous_hash, prev->hash, HASH_SIZE - 1);
+        new_block->previous_hash[HASH_SIZE - 1] = '\0';
+    } else {
+        // Genesis block
+        strncpy(new_block->previous_hash, "0", HASH_SIZE - 1);
+        new_block->previous_hash[HASH_SIZE - 1] = '\0';
+    }
+
+    // Mine the block
     new_block->nonce = 0;
-    mine_block(new_block, bc->difficulty); // Mine the block hash
+    mine_block(new_block, bc->difficulty);
 
-    bc->blocks[bc->length] = new_block; // Add the new block to the blockchain
-    bc->length++; // Iterate th length
+    // add the block to the blockchain
+    bc->blocks[bc->length] = new_block;
+    // increments the length of the blockchain
+    bc->length++;
 
     return 0;
 }
@@ -220,36 +242,44 @@ void free_blockchain(Blockchain *bc)
  * Adds a block from existing data (used for loading from disk)
  * without re-mining it.
  */
-int recreate_blockchain(Blockchain *bc, int index, long timestamp, const char *data, 
-                  const char *hash, const char *prev_hash, int nonce)
+int recreate_blockchain(Blockchain *bc, int index, long timestamp, int tx_count, 
+                  Transaction *txs, const char *hash, const char *prev_hash, int nonce)
 {
-    if (!bc || bc->length >= MAX_BLOCKS || strlen(data) >= DATA_SIZE)
+    // Check all input data are good
+    if (!bc || bc->length >= MAX_BLOCKS || tx_count > 5 || tx_count < 0)
         return -1;
 
+        
     Block *new_block = malloc(sizeof(Block));
     if (!new_block)
         return -1;
 
     new_block->index = index;
     new_block->timestamp = timestamp;
+    new_block->tx_count = tx_count;
     
-    strncpy(new_block->data, data, DATA_SIZE - 1);
-    new_block->data[DATA_SIZE - 1] = '\0';
+    // On copie les transactions une par une
+    for (int i = 0; i < tx_count; i++) {
+        strncpy(new_block->tx[i].sender, txs[i].sender, 49);
+        new_block->tx[i].sender[49] = '\0';
+
+        strncpy(new_block->tx[i].receiver, txs[i].receiver, 49);
+        new_block->tx[i].receiver[49] = '\0';
+
+        new_block->tx[i].amount = txs[i].amount;
+    }
     
+    // Copie du hash du bloc (on ne mine pas, on fait confiance au fichier ici)
     strncpy(new_block->hash, hash, HASH_SIZE - 1);
     new_block->hash[HASH_SIZE - 1] = '\0';
     
+    // Copie du hash précédent
     strncpy(new_block->previous_hash, prev_hash, HASH_SIZE - 1);
     new_block->previous_hash[HASH_SIZE - 1] = '\0';
 
     new_block->nonce = nonce;
-    
 
-    if (index != 0)
-        new_block->prev = bc->blocks[bc->length - 1];
-    else
-        new_block->prev = NULL;
-
+    // Ajout au tableau de la blockchain
     bc->blocks[bc->length] = new_block;
     bc->length++;
 
