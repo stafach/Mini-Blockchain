@@ -5,18 +5,24 @@
 #include <stddef.h>
 
 #define HASH_SIZE 65
-#define DATA_SIZE 256
+#define MAX_TRANSACTIONS 5
 
+typedef struct Transaction
+{
+    char sender[50];
+    char receiver[50];
+    float amount;
+} Transaction;
 
 typedef struct Block
 {
     int index;
     time_t timestamp;
-    char data[DATA_SIZE];
+    int tx_count;
+    Transaction tx[MAX_TRANSACTIONS];
     char previous_hash[HASH_SIZE];
     char hash[HASH_SIZE];
     int nonce;
-    struct Block *prev;
 } Block;
 
 void calculate_sha256(const char *input, char *output);

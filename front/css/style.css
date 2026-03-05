@@ -14,7 +14,7 @@
 body {
     background-color: var(--bg-light);
     color: var(--text);
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
 }
@@ -34,7 +34,7 @@ body {
 }
 
 .navbar-brand {
-    font-size: 2.8rem;
+    font-size: 2.5rem;
     font-weight: 800;
     color: var(--primary);
     text-decoration: none;
@@ -48,41 +48,37 @@ body {
     gap: 20px;
 }
 
-.btn-index, .btn-mine {
+.btn-mine {
     padding: 12px 30px;
     border-radius: 30px;
     text-decoration: none;
     font-weight: 600;
-}
-
-.btn-index {
-    background: transparent;
-    border: 2px solid var(--primary);
-    color: var(--primary);
-}
-
-.btn-mine {
     background: var(--primary);
     color: white;
+    transition: 0.3s ease;
+}
+
+.btn-mine:hover {
+    background: #34495e;
+    transform: translateY(-2px);
 }
 
 /* --- 4. CARTES BLOCS (INDEX) --- */
 .validate {
     text-align: center;
-    margin-bottom: 60px;
+    margin-bottom: 40px;
 }
 
 .validate h2 {
-    font-size: 2.2rem;
-    margin-bottom: 20px;
     color: var(--primary);
+    font-size: 2rem;
 }
 
 #blockchain-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 40px;
+    gap: 30px;
 }
 
 .card {
@@ -95,34 +91,118 @@ body {
     overflow: hidden;
 }
 
-.card-header {
+.block-header {
     background: #f1f3f5;
     padding: 18px 25px;
     font-weight: bold;
     color: var(--primary);
     border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.block-index {
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+}
+
+.block-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.badge-count {
+    background: var(--accent);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.block-date {
+    color: var(--text-muted);
+    font-weight: normal;
 }
 
 .card-body {
     padding: 25px;
 }
 
+.hash-section {
+    margin-bottom: 20px;
+}
+
+.hash-section p {
+    margin: 10px 0;
+}
+
 .text-break {
     word-break: break-all;
     font-family: 'Monaco', monospace;
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #eee;
+    background: #f1f3f5;
+    padding: 10px;
+    border-radius: 5px;
     display: block;
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+    border: 1px solid #eee;
+}
+
+/* Style des transactions dans l'index */
+.tx-list {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    border-left: 4px solid var(--accent);
+}
+
+.tx-item {
+    font-family: 'Courier New', monospace;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     color: #444;
 }
 
+.tx-item:last-child { border-bottom: none; }
+
+.tx-user { font-weight: bold; }
+
+.tx-arrow {
+    color: var(--accent);
+    font-weight: bold;
+    padding: 0 15px;
+    font-size: 2rem;      /* Taille imposante */
+    display: inline-block;
+    position: relative;     /* Permet un ajustement précis */
+    top: -2px;              /* Remonte la flèche de 2 pixels (ajuste ici) */
+    vertical-align: middle;
+}
+
+.tx-amount {
+    color: #219150;
+    font-weight: bold;
+    margin-left: auto; /* Pousse le montant à droite */
+}
+
+.block-footer {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+}
+
 .nonce {
-    background: var(--accent);
+    background: var(--primary);
     color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.9rem;
 }
 
 /* --- 5. PAGE MINAGE (MINE.HTML) --- */
@@ -132,39 +212,54 @@ body {
     border-radius: 20px;
     border: 1px solid var(--border);
     box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
-.input-group {
+.hint {
+    color: var(--text-muted);
+    text-align: center;
     margin-bottom: 30px;
-    display: flex;
-    flex-direction: column;
+    font-style: italic;
 }
 
-.input-group label {
-    font-weight: bold;
+.tx-row {
+    display: grid;
+    grid-template-columns: 40px 1fr 30px 1fr 100px;
+    align-items: center;
+    gap: 15px;
     margin-bottom: 12px;
-    text-align: left; /* Aligné à gauche pour le formulaire */
+    padding: 12px;
+    background: #fbfbfb;
+    border-radius: 10px;
+    border: 1px solid #f0f0f0;
 }
 
-textarea {
+.tx-number {
+    font-weight: bold;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.input-field {
     width: 100%;
     box-sizing: border-box;
-    background: #fdfdfd;
+    padding: 10px;
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 15px;
-    font-size: 1rem;
-    resize: vertical;
-    min-height: 120px;
+    border-radius: 6px;
+    font-size: 0.95rem;
 }
 
-.counter {
-    text-align: right;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin-top: 8px;
+.input-field:focus {
+    border-color: var(--accent);
+    outline: none;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+}
+
+.amount-input {
+    font-weight: bold;
+    color: var(--accent);
 }
 
 .btn-success {
@@ -177,28 +272,33 @@ textarea {
     font-size: 1.2rem;
     cursor: pointer;
     font-weight: bold;
-    transition: 0.2s ease;
-    display: block;
-    box-sizing: border-box;
+    transition: 0.3s;
+    margin-top: 20px;
 }
 
 .btn-success:hover {
-    opacity: 0.9;
+    background: #219150;
+    transform: translateY(-2px);
 }
 
 .btn-warning {
-    background: var(--danger);
+    background: #f39c12;
     color: white;
     border: none;
     padding: 14px 35px;
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
+    transition: 0.3s;
 }
+
+.btn-warning:hover { background: #e67e22; }
 
 .footer-link {
     text-align: center;
-    margin-top: 30px;
+    margin-top: 40px;
+    display: block;
+    width: 100%;
 }
 
 .footer-link a {
@@ -206,71 +306,64 @@ textarea {
     font-weight: bold;
     text-decoration: none;
     border-bottom: 2px solid var(--primary);
+    padding-bottom: 3px;
+    transition: 0.3s;
+}
+
+.footer-link a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
 }
 
 /* --- 6. MODAL --- */
 .modal-overlay {
-    display: none; /* caché par défaut */
+    display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7); /* Légèrement plus sombre pour le focus */
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
     justify-content: center;
     align-items: center;
     z-index: 9999;
 }
 
-.modal-overlay.active {
-    display: flex; /* affiché uniquement quand actif */
-}
+.modal-overlay.active { display: flex; }
 
 .modal-content {
     background: var(--white);
     padding: 40px;
     border-radius: 20px;
-    text-align: center; /* CENTRE TOUT LE TEXTE */
+    text-align: center;
     max-width: 400px;
     width: 85%;
     box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-    animation: fadeInScale 0.3s ease;
     display: flex;
     flex-direction: column;
-    align-items: center; /* CENTRE LES ELEMENTS FLEX */
-    gap: 15px;
+    align-items: center;
+    animation: fadeInScale 0.3s ease;
 }
 
 .modal-content h3 {
-    margin: 0;
+    margin: 0 0 15px 0;
     color: var(--primary);
     font-size: 2rem;
-    width: 100%;
 }
 
 .modal-content p {
-    margin: 10px 0 20px 0;
+    margin: 0 0 25px 0;
     font-size: 1.1rem;
     color: var(--text);
     line-height: 1.5;
-    width: 100%;
 }
 
-/* Ajustement du bouton dans la modal */
 .modal-content .btn-success {
-    margin-top: 10px;
-    width: 100%;
-    max-width: 200px; /* Le bouton ne prend pas toute la largeur pour être plus élégant */
+    max-width: 200px;
+    padding: 12px;
+    font-size: 1rem;
+    margin-top: 0;
 }
 
-/* --- Animation douce --- */
 @keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
 }

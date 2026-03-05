@@ -29,27 +29,41 @@ void calculate_sha256(const char *input, char *output)
 
 /**
  * Computes the SHA256 hash of a blockchain block.
- * The hash is based on the block's index, timestamp, data, previous_hash, and nonce.
+ * The hash is based on the block's index, timestamp, transaction, previous_hash, and nonce.
  * The resulting hash is stored in block->hash.
  *
  @block : pointer to the block whose hash will be calculated
  */
 
 void calculate_block_hash(Block *block) {
-    char str_to_hash[512];
+    char str_to_hash[4096];
+    char tx_str[512];
     char hash[HASH_SIZE];
 
+    // initialize the buffer
+    str_to_hash[0] = '\0';
+
     // Concatenation of the block fields
-    snprintf(str_to_hash, sizeof(str_to_hash), "%d%ld%s%s%d",
+    snprintf(str_to_hash, sizeof(str_to_hash), "%d%ld%d%s%d",
              block->index,
              block->timestamp,
-             block->data,
+             block->tx_count,
              block->previous_hash,
              block->nonce);
-
+    
+    // Concatenation of the transaction
+    for (int i = 0; i < block->tx_count; i++)
+    {
+        snprintf(tx_str, sizeof(tx_str), "%s%s%.2f",
+                 block->tx[i].sender,
+                 block->tx[i].receiver,
+                 block->tx[i].amount);
+        strcat(str_to_hash, tx_str);
+    }
     // Calcul hash
     calculate_sha256(str_to_hash, hash);
 
     // Copuy result in the block
-    strncpy(block->hash, hash, HASH_SIZE);
+    strncpy(block->hash, hash, HASH_SIZE - 1);
+    block->hash[HASH_SIZE - 1] = '\0';
 }

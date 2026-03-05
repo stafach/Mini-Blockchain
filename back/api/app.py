@@ -41,10 +41,10 @@ DB_FILE = "blockchain.json"
 
 # Verify if the file exist
 if os.path.exists(DB_FILE):
-    print(f"The file ({DB_FILE}) exist")
+    print(f"Load the blockchain from ({DB_FILE}) file")
     facade.load_blockchain(ma_bc, DB_FILE)
 else:
-    print("File doesn't exist")
+    print("No backup, blockchain initialization")
     facade.initialize(ctypes.byref(ma_bc))
 
 facade.active_blockchain = ma_bc
