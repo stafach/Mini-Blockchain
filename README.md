@@ -130,16 +130,16 @@ Mine and add blocks via the web interface or API.
 
 This project includes both unit tests and integration tests to ensure the blockchain engine works correctly.
 
-### Unit Tests
-- **Genesis Block**: Verifies that the blockchain always starts with a valid genesis block (`index == 0`).
-- **SHA256 & Block Hashing**: Implicitly tested when mining blocks and checking hashes for validity.
-- **Data Size Checks**: Ensures the engine rejects data exceeding maximum allowed length (`DATA_SIZE`).
+### Key Test Scenarios:
+- **Transaction Integrity:** 
+  Ensures transactions are correctly hashed and stored.
 
-### Integration Tests
-- **Adding Blocks via API**: Tests that the `/blocks/add` endpoint successfully mines and adds a block.
-- **Blockchain Validation**: Checks that `/blocks/validate` returns success when the chain is intact.
-- **Tampering Detection**: Modifies blockchain data manually and confirms that `/blocks/validate` detects corruption.
-- **Recreate Blockchain with Overflow Data**: Verifies that loading a blockchain with overly long data fails gracefully.
+- **Security & Validation:**
+  - Verifies that sender and receiver fields are capped at 50 characters to prevent buffer overflows in the C engine.
+  - Rejects invalid transaction formats (e.g., negative amounts).
+
+- **Tampering Detection:** 
+  Manually modifies blockchain.json to confirm that the /validate endpoint detects the corruption.
 
 ### Running Tests
 The tests are written using **pytest**:
@@ -163,9 +163,15 @@ All tests interact with the Flask API and the persistent blockchain JSON file to
 Although this project uses a JSON file for persistence, the data follows a strict cryptographic structure similar to a linked list.
 
 ### Block Structure (Data Model)
-The diagram below illustrates the attributes of each block and how they are linked to form the blockchain:
+**Block Index & Timestamp:** Tracks the order and time of creation.
 
-![Blockchain Data Model](./images/Persistence.png)
+**Transaction List:** Array of objects containing sender, receiver, and amount.
+
+**Cryptographic** Link: Each block's previous_hash must match the hash of the preceding block.
+
+**Nonce:** The solution found by the Proof-of-Work algorithm to satisfy the network difficulty.
+
+![Blockchain Data Model](./images/Persistence2.png)
 
 **Key Components of the Schema:**
 * **Genesis Block:** The starting point of the chain with `index = 0` and a `previous_hash` set to "0".
