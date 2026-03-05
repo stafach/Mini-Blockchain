@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Miner un bloc</title>
+    <title>Mine a block</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -13,17 +13,27 @@
             </div>
             
             <div class="card-body">
-                <div class="input-group">
-                    <label>Data</label>
-                    <textarea id="blockData" rows="4" placeholder="Enter your data here" oninput="updateCount()"></textarea>
-                    <div id="charCount" class="counter">0 / 255</div>
+                <p class="hint">Fill at least the first row. Maximum 5 transactions allowed.</p>
+                <div id="transactionsContainer">
+                    <div class="tx-row">
+                        <div class="tx-number">#1</div>
+                        <input type="text" placeholder="Sender" class="input-field sender" maxlength="50">
+                        <span>&rarr;</span>
+                        <input type="text" placeholder="Receiver" class="input-field receiver" maxlength="50">
+                        <input type="number" placeholder="Amt" class="input-field amount-input amount" step="0.01">
+                    </div>
+                    <div class="tx-row"><div class="tx-number">#2</div><input type="text" placeholder="Sender" class="input-field sender" maxlength="50"><span>&rarr;</span><input type="text" placeholder="Receiver" class="input-field receiver" maxlength="50"><input type="number" placeholder="Amt" class="input-field amount-input amount"></div>
+                    <div class="tx-row"><div class="tx-number">#3</div><input type="text" placeholder="Sender" class="input-field sender" maxlength="50"><span>&rarr;</span><input type="text" placeholder="Receiver" class="input-field receiver" maxlength="50"><input type="number" placeholder="Amt" class="input-field amount-input amount"></div>
+                    <div class="tx-row"><div class="tx-number">#4</div><input type="text" placeholder="Sender" class="input-field sender" maxlength="50"><span>&rarr;</span><input type="text" placeholder="Receiver" class="input-field receiver" maxlength="50"><input type="number" placeholder="Amt" class="input-field amount-input amount"></div>
+                    <div class="tx-row"><div class="tx-number">#5</div><input type="text" placeholder="Sender" class="input-field sender" maxlength="50"><span>&rarr;</span><input type="text" placeholder="Receiver" class="input-field receiver" maxlength="50"><input type="number" placeholder="Amt" class="input-field amount-input amount"></div>
                 </div>
+            </div>
 
                 <div id="mineBtn" class="btn-success" style="text-align: center; display: block; cursor: pointer;" onclick="mineBlock(event)">
                     Start mining
                 </div>
             </div>
-        </div>
+            </div>
 
         <div class="footer-link">
             <a href="index.html">Back to the blockchain</a>
@@ -76,26 +86,38 @@
                 event.stopPropagation();
             }
 
-            const dataInput = document.getElementById('blockData').value;
-            const btn = document.getElementById('mineBtn');
+            // Retrieves all transactions
+            const rows = document.querySelectorAll('.tx-row');
+            let transactions = []; // Create empty list for add all transactions
 
-            // Check empty data
-            if (dataInput.trim() === "") {
-                showModal("Error", "Data cannot be empty!", false);
-                return false;
+            // Retrieves data of each transaction
+            rows.forEach(row => {
+                const from = row.querySelector('.sender').value.trim();
+                const to = row.querySelector('.receiver').value.trim();
+                const am = row.querySelector('.amount').value;
+
+                // Add only if not empty transactions
+                if (from !== "" && to !== "" && am !== "") {
+                    transactions.push({
+                        sender: from,
+                        receiver: to,
+                        amount: parseFloat(am)
+                    });
+                }
+            });
+
+            // Check if there is at least 1 transaction
+            if (transactions.length === 0) {
+                showModal("Error", "Please fill at least one complete transaction!", false);
+                return;
             }
 
-            // Check data size
-            if (dataInput.length > 255) {
-                showModal("Error", "Data cannot exceed 255 characters!", false);
-                return false;
-            }
 
             try {
                 const response = await fetch('http://127.0.0.1:5001/blocks/add', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({data: dataInput})
+                    body: JSON.stringify({transactions: transactions})
                 });
 
                 const result = await response.json();
@@ -109,15 +131,6 @@
                 showModal("Connection Error", "API is not reachable.", false);
             }
             return false;
-        }
-
-        function updateCount() {
-            const textarea = document.getElementById('blockData');
-            const counter = document.getElementById('charCount');
-            const length = textarea.value.length;
-            
-            counter.innerText = `${length} / 255`;
-            counter.style.color = length > 255 ? "var(--danger)" : "var(--text-muted)";
         }
     </script>
 </body>
