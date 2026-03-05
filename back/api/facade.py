@@ -1,5 +1,5 @@
 import ctypes
-from models import Block, Blockchain
+from models import Block, Blockchain, Transaction
 import json
 import os
 
@@ -26,7 +26,7 @@ initialize.restype = None
 
 # Add block
 add = blockchain.add_block
-add.argtypes = [ctypes.POINTER(Blockchain), ctypes.c_char_p]
+add.argtypes = [ctypes.POINTER(Blockchain), ctypes.POINTER(Transaction), ctypes.c_int]
 add.restype = ctypes.c_int
 
 # Is chain valid
@@ -44,35 +44,33 @@ free = blockchain.free_blockchain
 free.argtypes = [ctypes.POINTER(Blockchain)]
 free.restype = None
 
-# Print the blockchain
-def print_full_blockchain(bc):
-    print(f"\n--- BLOCKCHAIN STATUS (Length: {bc.length}) ---")
-    
-    for i in range(bc.length):
-        block_ptr = bc.blocks[i] # accesses all blocks
-        block = block_ptr.contents # accesses the content of each block pointer
-        
-        print(f"Block #{block.index}")
-        print(f"  Timestamp: {block.timestamp}")
-        print(f"  Data:      {block.data.decode('utf-8')}")
-        print(f"  Hash:      {block.hash.decode('utf-8')}")
-        print(f"  Prev Hash: {block.previous_hash.decode('utf-8')}")
-        print(f"  Nonce:     {block.nonce}")
-        print("-" * 30)
-
 # Verify is blockchain is active
 active_blockchain = None
 
 
 # Save the blockchain in a json file
 def save_blockchain(bc, filename="blockchain.json"):
-    chain_data = []
+    chain_data = [] # Create empty list for save all the blockchain
+
+    # accesses each block
     for i in range(bc.length):
         b = bc.blocks[i].contents
+
+        # Create list with all transactions of the block
+        tx_list = []
+        for j in range(b.tx_count):
+            tx_list.append({
+                "sender": b.tx[j].sender.decode('utf-8'),
+                "receiver": b.tx[j].receiver.decode('utf-8'),
+                "amount": b.tx[j].amount
+            })
+
+        # Add all the data to the empty list
         chain_data.append({
             "index": b.index,
             "timestamp": b.timestamp,
-            "data": b.data.decode('utf-8'),
+            "tx_count": b.tx_count,
+            "transactions": tx_list, # Add the list of the transactions
             "hash": b.hash.decode('utf-8'),
             "previous_hash": b.previous_hash.decode('utf-8'),
             "nonce": b.nonce
@@ -92,7 +90,8 @@ recreate_bc.argtypes = [
     ctypes.POINTER(Blockchain), 
     ctypes.c_int, 
     ctypes.c_long, 
-    ctypes.c_char_p, 
+    ctypes.c_int,
+    ctypes.POINTER(Transaction), 
     ctypes.c_char_p, 
     ctypes.c_char_p, 
     ctypes.c_int
@@ -101,6 +100,7 @@ recreate_bc.restype = ctypes.c_int
 
 # Recreate the blockchain with the json file
 def load_blockchain(bc, filename="blockchain.json"):
+    # Check the json file exist
     if not os.path.exists(filename):
         return False
     
@@ -115,11 +115,20 @@ def load_blockchain(bc, filename="blockchain.json"):
     bc.length = 0
 
     for b in data:
+
+        # Create an array with all transactions of the block for C langage
+        tx_array = (Transaction * 5)()
+        for i, tx_data in enumerate(b['transactions']):
+            tx_array[i].sender = tx_data['sender'].encode('utf-8')
+            tx_array[i].receiver = tx_data['receiver'].encode('utf-8')
+            tx_array[i].amount = tx_data['amount']
+
         res = recreate_bc(
             ctypes.byref(bc),
             b['index'],
             b['timestamp'],
-            b['data'].encode('utf-8'),
+            b['tx_count'],
+            tx_array,
             b['hash'].encode('utf-8'),
             b['previous_hash'].encode('utf-8'),
             b['nonce']
