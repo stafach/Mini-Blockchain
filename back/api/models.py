@@ -7,9 +7,6 @@ class Transaction(ctypes.Structure):
         ("amount", ctypes.c_float)
     ]
 
-
-
-
 class Block(ctypes.Structure):
     _fields_ = [
         ("index", ctypes.c_int),
