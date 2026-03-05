@@ -258,7 +258,7 @@ int recreate_blockchain(Blockchain *bc, int index, long timestamp, int tx_count,
     new_block->timestamp = timestamp;
     new_block->tx_count = tx_count;
     
-    // On copie les transactions une par une
+    // Copy all transactions
     for (int i = 0; i < tx_count; i++) {
         strncpy(new_block->tx[i].sender, txs[i].sender, 49);
         new_block->tx[i].sender[49] = '\0';
@@ -269,17 +269,17 @@ int recreate_blockchain(Blockchain *bc, int index, long timestamp, int tx_count,
         new_block->tx[i].amount = txs[i].amount;
     }
     
-    // Copie du hash du bloc (on ne mine pas, on fait confiance au fichier ici)
+    // Copy the hash without mining
     strncpy(new_block->hash, hash, HASH_SIZE - 1);
     new_block->hash[HASH_SIZE - 1] = '\0';
     
-    // Copie du hash précédent
+    // Copy previous hash
     strncpy(new_block->previous_hash, prev_hash, HASH_SIZE - 1);
     new_block->previous_hash[HASH_SIZE - 1] = '\0';
 
     new_block->nonce = nonce;
 
-    // Ajout au tableau de la blockchain
+    // increments the length of the blockchain
     bc->blocks[bc->length] = new_block;
     bc->length++;
 
