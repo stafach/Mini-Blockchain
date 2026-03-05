@@ -90,8 +90,8 @@ class AddBlock(Resource):
              # Create an array with all transactions
             txs_arrays = (Transaction * 5)()
             for i, tx_data in enumerate(data_txs):
-                            txs_arrays[i].sender = tx_data['sender'].encode('utf-8')
-                            txs_arrays[i].receiver = tx_data['receiver'].encode('utf-8')
+                            txs_arrays[i].sender = tx_data['sender'][:49].encode('utf-8') # Use [:49] for no break the server
+                            txs_arrays[i].receiver = tx_data['receiver'][:49].encode('utf-8')
                             txs_arrays[i].amount = float(tx_data['amount'])
 
             # Call add function
