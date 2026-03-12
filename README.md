@@ -64,18 +64,21 @@ This project was developed in 3 weekly sprints:
 
 ---
 
+
 ## Landing Page
- 
+
 A portfolio landing page has been created to present this project to recruiters and visitors.
- 
+
 It includes:
 - Project overview and key features
 - Architecture diagram (C Engine → Flask API → Web Interface)
 - Tech stack showcase
 - Development timeline (3 sprints)
 - Links to the GitHub repository
- 
-The landing page is located at `landing/index.html` and can be opened directly in a browser (no server required).
+
+The landing page is **deployed online** and can be accessed here: [Landing Page](https://stafach.github.io/landing-page/)
+
+> The source file is located at `landing/index.html` in this repository and can also be opened directly in a browser (no server required).
 
 
 ---
