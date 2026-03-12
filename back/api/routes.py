@@ -114,28 +114,34 @@ class AddBlock(Resource):
             return {"error": f"Internal error: {str(e)}"}, 500
         
         # Retrieves the hash of the block added
-        last_block_ptr = facade.last_block(ctypes.byref(facade.active_blockchain))
-        new_hash = last_block_ptr.contents.hash.decode('utf-8')
-        
+        try:
+            last_block_ptr = facade.last_block(ctypes.byref(facade.active_blockchain))
+            new_hash = last_block_ptr.contents.hash.decode('utf-8')
+        except Exception as e:
+            return {"error": f"Internal error: {str(e)}"}, 500
+
         return {
             "message": "Block added",
-            "index": facade.active_blockchain.length - 1,
-            "number of transaction": last_block_ptr.contents.tx_count,
-            "hash": new_hash
-        }, 201
+        "index": facade.active_blockchain.length - 1,
+        "number of transaction": last_block_ptr.contents.tx_count,
+        "hash": new_hash
+    }, 201
 
 
 @api.route('/validate')
 class ValidateChain(Resource):
     @api.response(200, 'Blockchain is valid and untampered.')
     @api.response(400, 'Blockchain corruption detected!')
+    @api.response(500, 'Internal error')
     def get(self):
         """Verifies the integrity of the blockchain"""
         # Call the function
         error_idx = ctypes.c_int(0)
 
-        result = facade.chain_valid(ctypes.byref(facade.active_blockchain), ctypes.byref(error_idx))
-        
+        try:
+            result = facade.chain_valid(ctypes.byref(facade.active_blockchain), ctypes.byref(error_idx))
+        except Exception as e:
+            return {"error": f"Internal error: {str(e)}"}, 500
         # Check the result
         if result == 0:
             return {
