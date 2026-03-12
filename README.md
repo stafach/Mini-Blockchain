@@ -64,6 +64,22 @@ This project was developed in 3 weekly sprints:
 
 ---
 
+## Landing Page
+ 
+A portfolio landing page has been created to present this project to recruiters and visitors.
+ 
+It includes:
+- Project overview and key features
+- Architecture diagram (C Engine → Flask API → Web Interface)
+- Tech stack showcase
+- Development timeline (3 sprints)
+- Links to the GitHub repository
+ 
+The landing page is located at `landing/index.html` and can be opened directly in a browser (no server required).
+
+
+---
+
 
 ## Docker
 The easiest way to run the project is using Docker, which automatically handles the C compilation and environment setup.
@@ -151,9 +167,9 @@ venv\Scripts\activate     # Windows
 
 # Run tests
 pytest test.py
-
-All tests interact with the Flask API and the persistent blockchain JSON file to ensure both the C engine and Python API behave as expected. If you want to run the tests a second time, you must delete the blockchain.json file that was created after the first test.
 ```
+All tests interact with the Flask API and the persistent blockchain JSON file to ensure both the C engine and Python API behave as expected. If you want to run the tests a second time, you must delete the blockchain.json file that was created after the first test.
+
 
 ---
 
@@ -177,3 +193,13 @@ Although this project uses a JSON file for persistence, the data follows a stric
 * **Genesis Block:** The starting point of the chain with `index = 0` and a `previous_hash` set to "0".
 * **Cryptographic Link:** Every subsequent block contains a `previous_hash` field, which is a reference to the `hash` of the block before it. This creates an immutable "linked chain".
 * **Integrity Fields:** The `hash` is calculated by the C Core based on the `index`, `timestamp`, `data`, `previous_hash`, and `nonce`.
+
+
+---
+ 
+ 
+## Author
+ 
+**Mustapha Chermat**
+- LinkedIn: [mustapha-chermat](https://www.linkedin.com/in/mustapha-chermat/)
+- GitHub: [stafach](https://github.com/stafach)
